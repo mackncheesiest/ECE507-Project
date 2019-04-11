@@ -1,7 +1,7 @@
 #define DEBUG
 
 #include <stdio.h>
-
+#include <stdlib.h>
 #ifndef DEBUG
 #include <msp430.h>
 #endif
@@ -33,6 +33,9 @@ const int magneticFieldArr1[GRID_LEN][GRID_LEN] = {
 
 
 
+int randomSpin() {
+    return rand() % 2 ? 1 : -1;
+}
 
 void spinUpdateKernel(int currRow, int currCol) {
     int a = 0, b = 0, currSpin = spinArr[currRow][currCol], IS0 = magneticFieldArr0[currRow][currCol], IS1 = magneticFieldArr1[currRow][currCol], neighborRow, neighborCol;
@@ -65,10 +68,10 @@ void spinUpdateKernel(int currRow, int currCol) {
     } else if (a < b) {
         spinArr_temp[currRow][currCol] = -1;
     } else {
-        //TODO: Make this random?
-        spinArr_temp[currRow][currCol] = -1;
+        spinArr_temp[currRow][currCol] = randomSpin();
     }
 }
+
 int main(void)
 {
     unsigned int row, col, iter;
