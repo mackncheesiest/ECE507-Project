@@ -1,5 +1,10 @@
+#define DEBUG
+
 #include <stdio.h>
+
+#ifndef DEBUG
 #include <msp430.h>
+#endif
 
 #define GRID_LEN 3
 #define NUM_ITERS 1
@@ -68,8 +73,9 @@ int main(void)
 {
     unsigned int row, col, iter;
 
+#ifndef DEBUG
     WDTCTL = WDTPW | WDTHOLD;	// stop watchdog timer
-	
+#endif
     //Perform computations
     for (iter = 0; iter < NUM_ITERS; iter++) {
         for (row = 0; row < GRID_LEN; row++) {
