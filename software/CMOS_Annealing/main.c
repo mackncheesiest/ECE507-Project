@@ -2,12 +2,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #ifndef DEBUG
 #include <msp430.h>
 #endif
 
 #define GRID_LEN 3
 #define NUM_ITERS 1
+#define DESTROY_PROB 0.01
 
 int spinArr[GRID_LEN][GRID_LEN] = {
     {-1, -1, 1},
@@ -32,6 +34,9 @@ const int magneticFieldArr1[GRID_LEN][GRID_LEN] = {
 };
 
 
+int destroySpinState(double probability) {
+    return (rand() / (double)RAND_MAX) < probability;
+}
 
 int randomSpin() {
     return rand() % 2 ? 1 : -1;
@@ -70,10 +75,16 @@ void spinUpdateKernel(int currRow, int currCol) {
     } else {
         spinArr_temp[currRow][currCol] = randomSpin();
     }
+
+    if (destroySpinState(DESTROY_PROB)) {
+        spinArr_temp[currRow][currCol] = -spinArr_temp[currRow][currCol];
+    }
 }
 
 int main(void)
 {
+    srand(time(0));
+
     unsigned int row, col, iter;
 
 #ifndef DEBUG
