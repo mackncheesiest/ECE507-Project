@@ -2,7 +2,7 @@ clear
 close all
 
 %% Loading image, resizing to square, and binarizing
-im = rgb2gray(imread('Letter.PNG'));
+im = rgb2gray(imread('Letter.PNG', 'PNG'));
 width = max(size(im));
 im = imresize(im, [width, width]);
 im = imbinarize(im);

@@ -81,14 +81,14 @@ int main(void)
 #ifndef DEBUG
     WDTCTL = WDTPW | WDTHOLD;	// stop watchdog timer
 #endif
-    //Perform computations
+    // Perform computations
     for (iter = 0; iter < NUM_ITERS; iter++) {
         for (row = 0; row < GRID_LEN; row++) {
             for (col = 0; col < GRID_LEN; col++) {
                 spinUpdateKernel(row, col);
             }
         }
-        //TODO: Attempts to do this by swapping pointers haven't worked out well. Falling back to what will be slow but should definitely work
+        // TODO: Attempts to do this by swapping pointers haven't worked out well. Falling back to what will be slow but should definitely work
         for (row = 0; row < GRID_LEN; row++) {
             for (col = 0; col < GRID_LEN; col++) {
                 spinArr[row][col] = spinArr_temp[row][col];
@@ -96,13 +96,23 @@ int main(void)
         }
     }
 
-    //Print results
+    // Write results to file
+    FILE *fp;
+    fp = fopen("output.txt", "w");
+
+    if (fp == NULL) {
+        printf("Unable to create output file.\n");
+        exit(EXIT_FAILURE);
+    }
+
     for (row = 0; row < GRID_LEN; row++) {
         for (col = 0; col < GRID_LEN; col++) {
-            printf("%d ", spinArr[row][col]);
+            fprintf(fp, "%d ", spinArr[row][col]);
         }
-        printf("\n");
+        fprintf(fp, "\n");
     }
+
+    fclose(fp);
 
     return 0;
 }
