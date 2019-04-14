@@ -2,6 +2,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <math.h>
 #include <time.h>
 #ifndef DEBUG
 #include <msp430.h>
@@ -9,10 +11,9 @@
 
 #include "data.h"
 
-
 #define NUM_ITERS 1000000
 #define DESTROY_PROB 0.00
-
+#define PRINT_ITER 10000
 
 int destroySpinState(double probability) {
     return (rand() / (double)RAND_MAX) < probability;
@@ -72,6 +73,26 @@ void spinUpdateKernel(int currRow, int currCol) {
     }
 }
 
+void writeToFile(char* filename) {
+     // Write results to file
+    FILE *fp;
+    fp = fopen(filename, "w");
+
+    if (fp == NULL) {
+        printf("Unable to create output file.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    for (int row = 0; row < GRID_LEN; row++) {
+        for (int col = 0; col < GRID_LEN; col++) {
+            fprintf(fp, "%d ", spinArr[row][col]);
+        }
+        fprintf(fp, "\n");
+    }
+
+    fclose(fp);
+}
+
 int main(void)
 {
     srand(time(0));
@@ -81,6 +102,9 @@ int main(void)
 #ifndef DEBUG
     WDTCTL = WDTPW | WDTHOLD;	// stop watchdog timer
 #endif
+
+    writeToFile("initial.txt");
+
     // Perform computations
     for (iter = 0; iter < NUM_ITERS; iter++) {
         for (row = 0; row < GRID_LEN; row++) {
@@ -94,25 +118,16 @@ int main(void)
                 spinArr[row][col] = spinArr_temp[row][col];
             }
         }
-    }
-
-    // Write results to file
-    FILE *fp;
-    fp = fopen("output.txt", "w");
-
-    if (fp == NULL) {
-        printf("Unable to create output file.\n");
-        exit(EXIT_FAILURE);
-    }
-
-    for (row = 0; row < GRID_LEN; row++) {
-        for (col = 0; col < GRID_LEN; col++) {
-            fprintf(fp, "%d ", spinArr[row][col]);
+        // Print
+        if (iter % PRINT_ITER == 0) {
+            int size = 10*4;
+            char buffer[size];
+            sprintf(buffer,"iter_%d.txt", iter);
+            writeToFile(buffer);
         }
-        fprintf(fp, "\n");
     }
-
-    fclose(fp);
+    
+    writeToFile("final.txt");
 
     return 0;
 }
