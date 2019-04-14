@@ -1,11 +1,13 @@
 clear
 close all
+format compact
 
 %% Loading image, resizing to square, and binarizing
-im = rgb2gray(imread('Letter.PNG', 'PNG'));
+im = rgb2gray(imread('Letter.PNG'));
 width = max(size(im));
 im = imresize(im, [width, width]);
 im = imbinarize(im);
+ 
 
 %% Finding the horizontal interaction coefficients
 horizontal_interaction_coefficients = zeros(width, width - 1);
@@ -18,7 +20,6 @@ for row = 1:width
         end
     end
 end
-
 
 %% Finding the vertical interaction coefficients
 vertical_interaction_coefficients = zeros(width - 1, width);
@@ -44,7 +45,7 @@ spin(spin <= 0.5) = -1;
 %% Creating data file
 write_data_file(spin, mag_field_0, mag_field_1, ...
     horizontal_interaction_coefficients, ...
-    vertical_interaction_coefficients, 'data.h', width)
+    vertical_interaction_coefficients, '../CMOS_Annealing/data.h', width)
 
 
 
@@ -65,7 +66,7 @@ title("Vertical interaction coefficients")
 function write_data_file(spin, mag_field_0, mag_field_1, ...
     horizontal_interaction_coefficients, ...
     vertical_interaction_coefficients, file_path, grid_length)    
-
+    
     spin_str = array_to_c(spin, ...
         'int spinArr[GRID_LEN][GRID_LEN]');
     mag_field_0_str = array_to_c(mag_field_0, ...
@@ -74,10 +75,11 @@ function write_data_file(spin, mag_field_0, mag_field_1, ...
         'const int magneticFieldArr1[GRID_LEN][GRID_LEN]');
     horizontal_interaction_str = ...
         array_to_c(horizontal_interaction_coefficients, ...
-        'interactionArrHorizontal[GRID_LEN][GRID_LEN-1]');
+        'int interactionArrHorizontal[GRID_LEN][GRID_LEN-1]');
+    
     vertical_interaction_str = ...
         array_to_c(vertical_interaction_coefficients, ...
-        'interactionArrVertical[GRID_LEN][GRID_LEN-1]');
+        'int interactionArrVertical[GRID_LEN-1][GRID_LEN]');
     
     fid = fopen(file_path,'w');
     fprintf(fid, '#define GRID_LEN %d\n\n', grid_length);
@@ -100,16 +102,18 @@ function ret_str = array_to_c(arr, arr_name)
     
     
     for row = 1:height
+        col_str = '';
         for col = 1:width
-            ret_str = strcat(ret_str, int2str(arr(row, col)));
+            col_str = strcat(col_str, int2str(arr(row, col)));
             if col == width && row == height
-                ret_str = strcat(ret_str, '}');
+                col_str = strcat(col_str, '}');
             elseif col == width
-                ret_str = strcat(ret_str, '},\n\t{');
+                col_str = strcat(col_str, '},\n\t{');
             else
-                ret_str = strcat(ret_str, ', ');
+                col_str = strcat(col_str, ', ');
             end
         end
+        ret_str = strcat(ret_str, col_str);
     end
     
     ret_str  = strcat(ret_str, '\n};');

@@ -10,7 +10,7 @@
 #include "data.h"
 
 
-#define NUM_ITERS 1000
+#define NUM_ITERS 1000000
 #define DESTROY_PROB 0.00
 
 
