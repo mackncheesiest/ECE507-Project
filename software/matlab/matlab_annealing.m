@@ -2,9 +2,12 @@ clear
 close all
 format compact
 
+%% Defining parameters
+num_spins = 20000;
+
 %% Loading image, resizing to square, and binarizing
 im = rgb2gray(imread('Letter.PNG'));
-width = max(size(im));
+width = floor(sqrt(num_spins));
 im = imresize(im, [width, width]);
 im = imbinarize(im);
  

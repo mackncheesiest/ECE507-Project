@@ -11,9 +11,9 @@
 
 #include "data.h"
 
-#define NUM_ITERS 1000000
+#define NUM_ITERS 100000
 #define DESTROY_PROB 0.00
-#define PRINT_ITER 10000
+#define PRINT_ITER 1000
 
 int destroySpinState(double probability) {
     return (rand() / (double)RAND_MAX) < probability;
