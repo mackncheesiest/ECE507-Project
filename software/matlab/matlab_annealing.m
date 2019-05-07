@@ -1,9 +1,11 @@
-clear
+% clear
 close all
 format compact
 
 %% Defining parameters
-num_spins = 20000;
+num_spins = 171*171;
+
+rng(01000101);
 
 %% Loading image, resizing to square, and binarizing
 im = rgb2gray(imread('Letter.PNG'));
@@ -12,7 +14,7 @@ im = imresize(im, [width, width]);
 im = imbinarize(im);
  
 
-%% Finding the horizontal interaction coefficients
+%% Finding the horizontal interaction  coefficients
 horizontal_interaction_coefficients = zeros(width, width - 1);
 for row = 1:width
     for col = 1:width-1
@@ -71,31 +73,33 @@ function write_data_file(spin, mag_field_0, mag_field_1, ...
     vertical_interaction_coefficients, file_path, grid_length)    
     
     spin_str = array_to_c(spin, ...
-        'int spinArr[GRID_LEN][GRID_LEN]');
+        'int8_t spinArr[GRID_LEN][GRID_LEN]');
     mag_field_0_str = array_to_c(mag_field_0, ...
-        'const int magneticFieldArr0[GRID_LEN][GRID_LEN]');
+        'const int8_t magneticFieldArr0[GRID_LEN][GRID_LEN]');
     mag_field_1_str = array_to_c(mag_field_1, ...
-        'const int magneticFieldArr1[GRID_LEN][GRID_LEN]');
+        'const int8_t magneticFieldArr1[GRID_LEN][GRID_LEN]');
     horizontal_interaction_str = ...
         array_to_c(horizontal_interaction_coefficients, ...
-        'int interactionArrHorizontal[GRID_LEN][GRID_LEN-1]');
+        'int8_t interactionArrHorizontal[GRID_LEN][GRID_LEN-1]');
     
     vertical_interaction_str = ...
         array_to_c(vertical_interaction_coefficients, ...
-        'int interactionArrVertical[GRID_LEN-1][GRID_LEN]');
+        'int8_t interactionArrVertical[GRID_LEN-1][GRID_LEN]');
     
     fid = fopen(file_path,'w');
     fprintf(fid, '#define GRID_LEN %d\n\n', grid_length);
-    fprintf(fid, 'int spinArr_temp[GRID_LEN][GRID_LEN];\n\n');
+    fprintf(fid, 'int8_t spinArr_temp[GRID_LEN][GRID_LEN];\n\n');
     fprintf(fid, spin_str);
     fprintf(fid, '\n\n');
     fprintf(fid, horizontal_interaction_str);
     fprintf(fid, '\n\n');
     fprintf(fid, vertical_interaction_str);
     fprintf(fid, '\n\n');
+    fprintf(fid, '#ifdef RUN_LOCAL\n');
     fprintf(fid, mag_field_0_str);
     fprintf(fid, '\n\n');
     fprintf(fid, mag_field_1_str);
+    fprintf(fid, '\n#endif\n');
     fclose(fid);
 end
 

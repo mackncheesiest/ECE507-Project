@@ -1,10 +1,10 @@
-clear
+% clear
 close all
 format compact
 
 %% Initializing directory and reading all text files from the directory
-data_dir_path = '../CMOS_Annealing/small_image_100000/';
-files = dir(strcat(data_dir_path, '*.txt'));
+data_dir_path = '../';
+files = dir(strcat(data_dir_path, 'final*.txt'));
 
 
 for i = 1:size(files, 1)
