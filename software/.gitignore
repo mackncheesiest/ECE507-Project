@@ -1,6 +1,9 @@
 *
 !*.c
-!CMOS_Annealing/
+!*.h
+!*.cu
+!CPU_MSP430/
+!CUDA/
 !matlab/
 
 # Stolen from https://github.com/github/gitignore/blob/master/Global/Eclipse.gitignore

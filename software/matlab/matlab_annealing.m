@@ -50,7 +50,7 @@ spin(spin <= 0.5) = -1;
 %% Creating data file
 write_data_file(spin, mag_field_0, mag_field_1, ...
     horizontal_interaction_coefficients, ...
-    vertical_interaction_coefficients, '../CMOS_Annealing/data.h', width)
+    vertical_interaction_coefficients, '../CPU_MSP430/data.h', width)
 
 
 
